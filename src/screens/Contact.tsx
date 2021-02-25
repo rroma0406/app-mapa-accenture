@@ -4,14 +4,45 @@ import {StyleSheet, View, Text, Dimensions, Image, TextInput} from "react-native
 import {Feather} from "@expo/vector-icons";
 import logoAccenture from '../images/Accenture.png';
 import LottieView from 'lottie-react-native';
+import {contactSend} from "../service";
+import {useNavigation} from "@react-navigation/native";
 
 export default function Contact() {
+
+    const navigation = useNavigation()
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [text, setText] = useState('');
-    const [isSendMessage, setIsSendMessage] = useState(true);
+    const [isSendMessage, setIsSendMessage] = useState(false);
+
+    function sendAccentureMessage() {
+        const postData = {
+            name,
+            phone,
+            email,
+            text
+        };
+        contactSend.post('', postData).then(
+            response => {
+                setIsSendMessage(true);
+                setName('')
+                setEmail('')
+                setPhone('')
+                setText('')
+            }
+        )
+    }
+
+    function handleOpenCamera() {
+        navigation.navigate('camera');
+    }
+
+    function HandleOpenStorage() {
+        navigation.navigate('storage');
+    }
+
 
     return (
         <ScrollView style={styles.scrollView}>
@@ -28,26 +59,45 @@ export default function Contact() {
                         </>
                     )
                     : (<>
-                            <Image source={logoAccenture} style={styles.logoAccenture}/>
-                            <Text style={styles.formTitle}>Formulário de Contato</Text>
-                            <View>
-                                <Text style={styles.labelForm}>Seu nome:</Text>
-                                <TextInput style={styles.inputForm} value={name}/>
+                            <ScrollView style={styles.scroll}>
+                                <View style={styles.container}>
+                                    <Image source={logoAccenture} style={styles.logoAccenture}/>
+                                    <Text style={styles.formTitle}>Formulário de Contato</Text>
+                                    <View>
+                                        <RectButton style={styles.buttonBottom} onPress={handleOpenCamera}>
+                                            <Text style={styles.textSendButton}>Camera</Text>
+                                            <Feather name="camera" size={20} color="#A100FF"/>
+                                        </RectButton>
+                                        <RectButton style={styles.buttonBottom} onPress={HandleOpenStorage}>
+                                            <Text style={styles.textSendButton}>Storage</Text>
+                                            <Feather name="database" size={20} color="#A100FF"/>
+                                        </RectButton>
+                                        <Text style={styles.labelForm}>Seu nome:</Text>
+                                        <TextInput style={styles.inputForm} value={name} placeholder="Digite seu Nome"
+                                                   onChangeText={text => setName(text)}/>
 
-                                <Text style={styles.labelForm}>Seu telefone:</Text>
-                                <TextInput style={styles.inputForm}/>
+                                        <Text style={styles.labelForm}>Seu telefone:</Text>
+                                        <TextInput style={styles.inputForm} value={phone}
+                                                   placeholder="Digite seu Telefone"
+                                                   onChangeText={text => setPhone(text)}/>
 
-                                <Text style={styles.labelForm}>Seu email:</Text>
-                                <TextInput style={styles.inputForm}/>
+                                        <Text style={styles.labelForm}>Seu email:</Text>
+                                        <TextInput style={styles.inputForm} value={email}
+                                                   placeholder="Digite seu E-mail"
+                                                   onChangeText={text => setEmail(text)}/>
 
-                                <Text style={styles.labelForm}>Deixe sua mensagem:</Text>
-                                <TextInput style={styles.inputFormMultiLine} multiline/>
+                                        <Text style={styles.labelForm}>Deixe sua mensagem:</Text>
+                                        <TextInput style={styles.inputFormMultiLine} value={text}
+                                                   placeholder="Digite sua Mensagem" multiline
+                                                   onChangeText={text => setText(text)}/>
 
-                                <RectButton style={styles.sendButton}>
-                                    <Text style={styles.textSendButton}>Enviar mensagem</Text>
-                                    <Feather name="send" size={20} color="#A100FF"/>
-                                </RectButton>
-                            </View>
+                                        <RectButton style={styles.sendButton} onPress={sendAccentureMessage}>
+                                            <Text style={styles.textSendButton}>Enviar mensagem</Text>
+                                            <Feather name="send" size={20} color="#A100FF"/>
+                                        </RectButton>
+                                    </View>
+                                </View>
+                            </ScrollView>
                         </>
                     )}
             </View>
@@ -61,7 +111,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginVertical: 40,
-        height: Dimensions.get("window").height
+    },
+    scrollView: {
+        width: Dimensions.get("window").width
     },
     sendText: {
         color: '#A100FF',
@@ -83,7 +135,7 @@ const styles = StyleSheet.create({
         marginVertical: 30,
         color: '#A100FF',
     },
-    scrollView: {
+    scroll: {
         width: Dimensions.get('window').width
     },
     animationContent: {
@@ -117,6 +169,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginBottom: 80,
+        marginTop: 20,
+    },
+    buttonBottom: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 20,
         marginTop: 20,
     },
 

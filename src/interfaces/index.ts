@@ -32,3 +32,7 @@ export interface IAllUnits {
 export interface GetUnit {
     id: number,
 }
+
+export interface ISetHasPermission {
+    status: string;
+}

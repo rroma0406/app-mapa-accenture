@@ -6,9 +6,17 @@ import AccentureLogo from "../images/Accenture.png";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {getData} from '../service'
 import {GetUnit, HeaderProps, IAllUnits} from '../interfaces'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Accenture({title}: HeaderProps, {id}: GetUnit) {
+
+    const storageData = async(value: string) => {
+        try {
+            await AsyncStorage.setItem('@accentureUnit', value)
+        } catch (e) {
+            console.log('Erro')
+        }
+    }
 
     const route = useRoute()
     const params = route.params as GetUnit
@@ -19,6 +27,7 @@ export default function Accenture({title}: HeaderProps, {id}: GetUnit) {
         getData.get(`find?id=${params.id}`).then(
             response => {
                 setUnit(response.data)
+                storageData(JSON.stringify(response.data))
             }
         )
     }, [params.id])
